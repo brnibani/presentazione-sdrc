@@ -1,0 +1,400 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  
+  \setbeamercovered{transparent}
+}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{fancybox}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \oldmacro\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+
+\title[Bani Gabriele 5719258]{LOCALIZED ENTITY FAILURES}
+
+\subtitle[]{Using Fault Detection $\&$ Preexecution Failures}
+
+\author[Sistemi Distribuiti $\&$ Reti di Calcolatori (2014/2015)] {}
+
+\date[Bani Gabriele] {}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\title[Bani Gabriele 5719258]{LOCALIZED ENTITY FAILURES}
+\subtitle[]{Using Fault Detection}
+
+\section{Localized Entity Failures: Using Fault Detection}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\subsection{Introduction}
+\begin{frame}{Introduction}
+\begin{flushleft}
+The availability of any $\textbf{reliable fault detector}$ in a $\textbf{asynchronous system}$ would let to distinguish a slow entity from a failed entity. However, the problem in asynchronous system is how to construct reliable fault detectors.
+\end{flushleft}
+\begin{flushleft}
+In $\textbf{fully synchronous system}$, if messages are never lost, synchrony ensures that the absence of an anticipated message indicates a faulty sender.
+\end{flushleft}
+$\textbf{In asynchronous systems:}$
+\begin{itemize}
+\item Do we need a completely reliable crash detector?
+\item What is the weakest detector we can usefully employ?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Asynchronous system : additional assumptions (FDA)}
+\setbeamertemplate{enumerate items}[circle]
+\begin{enumerate}
+\item Connectivity, Bidirectional Links
+\begin{flushleft}
+\end{flushleft}
+\item The network is a complete graph
+\begin{flushleft}
+\end{flushleft}
+\item Entities have unique ids
+\begin{flushleft}
+\end{flushleft}
+\item Entities can fail only by crashing
+\begin{flushleft}
+\end{flushleft}
+\item Each entity knows the ids of its neighbors
+\end{enumerate}
+\end{frame}
+
+\subsection{Failure Detectors and Their Properties}
+\begin{frame}{Failure Detectors and Their Properties}
+A distributed detector of entity failures ia a set of n failure detection modules, one per entity. Each module keeps a list of entities it suspects to be faulty.
+\begin{flushleft}
+Failure detectors are defined in terms of the property they satisfy, instead of the actual implementation. We consider two properties:
+\end{flushleft}
+\begin{center}
+\shadowbox{Completeness}
+\: \: \: \: \: \: \: \:
+\shadowbox{Accuracy}
+\end{center}
+\end{frame}
+
+\begin{frame}{Completeness $\&$ Accuracy}
+Are both properties necessary?
+\begin{exampleblock}{Example: the trivial failure detector "PARANOID"}
+Each entity permanent suspect every other entity
+\begin{itemize}
+\item[o] Paranoid will satisfy any completeness property
+\item[o] Paranoid provides no real information about the actual failures
+\end{itemize}
+\end{exampleblock}
+\pause
+\begin{exampleblock}{Example: the trivial failure detector "NAIVE"}
+Each entity never suspect any other entity
+\begin{itemize}
+\item[o] Naive will satisfy any accuracy property
+\item[o] Naive provides no real information about the failures
+\end{itemize}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Types of Completeness $\&$ Accuracy}
+\begin{block}{}
+$\textbf{Completeness}$
+\begin{flushleft}
+\setbeamertemplate{itemize items}[triangle]
+\begin{itemize}
+\item Strong Completeness
+\item Weak Completeness
+\end{itemize}
+\end{flushleft}
+\end{block}
+\pause
+\begin{block}{}
+$\textbf{Accuracy}$
+\begin{flushleft}
+\setbeamertemplate{itemize items}[square]
+\begin{itemize}
+\item Perpetual Strong Accuracy
+\item Perpetual Weak Accuracy
+\item Eventual Strong Accuracy
+\item Eventual Weak Accuracy
+\end{itemize}
+\end{flushleft}
+\end{block}
+\end{frame}
+
+\begin{frame}
+Perpetual strong accuracy is very difficult to achieve in many systems. However, even the perpetual weak accuracy may be a strong requirement for any failure detector to achieve, for example, because of an high network traffic and a too long delaying of messages. Fortunately, there are also the eventual strong accuracy and eventual weak accuracy.
+\begin{flushleft}
+\end{flushleft}
+\begin{block}{Definition: Perfect Failure Detector }
+A failure detector is $\textbf{perfect}$ if it satisfies the strong completeness and the perpetual strong accuracy.
+\end{block}
+In synchronous systems there is a perfect failure detector.
+\end{frame}
+
+\begin{frame}
+\begin{block}{Theorem}
+Any failure detector that satisfies only weak completeness and eventual weak accuracy is sufficient for reaching consensus if at most f < $\frac{n}{2}$ entities can crash.
+\end{block}
+\begin{flushleft}
+\end{flushleft}
+\begin{flushleft}
+We denote by $\Omega$ any failure detector that satisfies only weak completeness and eventual weak accuracy.
+\end{flushleft}
+\end{frame}
+
+\subsection{The Weakest Failure Detector}
+\begin{frame}{The Weakest Failure Detector}
+\begin{flushleft}
+What is the weakest detector?
+\end{flushleft}
+\begin{alertblock}{Notations}
+$\textbf{F(t)}$ : function describing the set of entities that have crashed through time. $\forall$t F(t) $\subseteq$ F(t+1)\\
+\medskip
+$\textbf{crashed(F)}$ = $\bigcup_{t}$ F(t) denote the set of entities that crash under the failure pattern F\\
+\medskip
+$\textbf{correct(F)}$ = $\epsilon$ - crashed(F) denotes the set of entities that not crash under F\\
+\medskip
+$\textbf{D(F})$ denote the set of all failure detector histories that can occur in executions with failure pattern F and failure detector D\\
+\medskip
+$\textbf{v}^r$ denote the history of the variable v during the execution r
+\end{alertblock}
+\end{frame}
+
+\begin{frame}{Reduction Algorithm}
+Now we want to define an algorithm T to transform a failure detector D into another failure detector D'.
+\begin{flushleft}
+\end{flushleft}
+In particular, the algorithm T transforms D into D' (D $\geqslant$ D') if and only if, for every execution $\in$ of T using D, the histories of the variables output(x) in execution r can actually occur in some executions with detector D' and pattern F.
+\begin{flushleft}
+\end{flushleft}
+output(x) is a variable contained in every entity x that, using the failure detector D, emulates the output of D' in x.
+\end{frame}
+
+\begin{frame}{Reduction Algorithm}
+$\textbf{How we can use actually the algorithm T?}$
+\begin{flushleft}
+Suppose that D $\geqslant$ D' (D is reducible to D') and supppose an algorithm A using failure detector D' to solve the problems but only D is available.
+\end{flushleft}
+\begin{flushleft}
+Then we can use the algorithm T in this way:
+\setbeamertemplate{itemize items}[triangle]
+\begin{itemize}
+\item Concurrently with A, entities run T to transform D into D'
+\item Whenever A requires that x query its failure detector module, x reads the current value of output(x) instead.
+\end{itemize}
+\end{flushleft}
+\end{frame}
+
+\begin{frame}{Example of Reduction Algorithm: REDUCE algorithm}
+The REDUCE algorithm transforms any given failure detector D that satisfies weak completeness into a failure detector D' that satisfies strong completeness.\\
+Every entity x in REDUCE executes the following:
+\small
+\begin{itemize}
+\item $\textbf{Initially}$: \\
+output(x) $\leftarrow$ $\oslash$
+\item $\textbf{Repeatedly}$ $\textbf{the entity}$ $\textbf{x queries}$ $\textbf{its local}$ $\textbf{failure}$ $\textbf{detector}$ $\textbf{module}$ $D_x$ : \\
+suspect(x) $\leftarrow$ $D_x$ \\
+send <x, suspects(x)> to N(x)\\
+\item $\textbf{When}$ $\textbf{receiving}$ <y, suspect(y)> $\textbf{from}$ y:\\
+output(x) := output(x) $\bigcup$ suspect(y) - {y}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Properties satisfied by the REDUCE algorithm}
+\small
+Suppose H $\in$ D(F) denote an history of failure detector D for pattern F
+\begin{block}{Lemma : \small Transforming weak completeness into strong completeness}
+Let z be any entity that crashes; if eventually some correct entity permanently suspects y in H, then eventually all correct entities permanently suspect y in output$^{\in}$
+\end{block}
+\begin{flushleft}
+$\textbf{Proof}$
+\end{flushleft}
+Let y be any entity that crashes. Suppose that there is a time t after which some correct entity x permanent suspects y in H.\\ We must show that there is a time after which every correct entity suspects y in output$^{\in}$. \\
+\end{frame}
+
+\begin{frame}
+\small
+As y crashes, there is a time t' after which no entity receives a message from y. \\Consider the execution by entity x after time t" = max(t,t').\\Entity x sends a message of the type <x,suspects(x)> with y $\in$ suspects(x) to all entities. Eventually, every correct entity receives <x,suspects(x)> and adds y to its output.\\
+As no correct entity receive any message from y after time t' and t" $\geqslant$ t', no correct entity removes y from its output after time t".\\
+Thus, there is a time after which every correct entity permanently suspects y in output$^{\in}$.\\
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Lemma: Preserving perpetual accuracy}
+Let y be any entity; if no entity suspects y in H before time t, then no entity suspects y in output$^{\in}$ before time t.
+\end{block}
+\begin{flushleft}
+\end{flushleft}
+\begin{block}{Lemma: Preserving eventual accuracy}
+Let y be any correct entity; if there is a time after which no correct entity suspects y in H, then there is a time after which no correct entity suspects y in output$^{\in}$.
+\end{block}
+\end{frame}
+
+\begin{frame}
+So we can conclude that REDUCE transforms any failure detector D that satisfies weak completeness into a failure detector D' that satisfies strong completeness.
+\begin{block}{Theorem}
+REDUCE strengthens completeness while preserving accuracy.
+\end{block}
+\begin{block}{Theorem}
+$\Omega$ is the weakest failure detector that can possibly be used to achieve consensus in presence of crash failures.
+\end{block}
+\end{frame}
+
+\title[Bani Gabriele 5719258]{LOCALIZED ENTITY FAILURES}
+\subtitle[]{Preexecution Failures}
+\section{Localized Entity Failures: Preexecution Failures}
+\begin{frame}
+\titlepage
+\end{frame}
+
+\subsection{Partial Reliability}
+\begin{frame}{Partial Reliability}
+\begin{flushleft}
+Even in a complete graph if all the failure occur before the execution of the algorithm, the proof of the Single Failure Disaster does not hold because it relies heavily on the fact that the "adversary" of each entity can choose which entity fails as well as the moment when the failure occurs.
+\end{flushleft}
+\begin{flushleft}
+Instead of Total Reliability restriction ("No faults have occurred nor will occur"), we can suppose the $\textbf{Partial Reliability}$ restriction: "No faults will occur during the computation tasks"
+\end{flushleft}
+\end{frame}
+
+\subsection{Example: Election in Complete Network}
+\begin{frame}{Example: Election in Complete Network}
+\small
+Consider the Election problem in a complete graph where some entities might have crash. Under Partial Reliability, it is possible to perform the election without synchrony, randomization and without fault detection even if f $\leq$ $\lceil\frac{n}{2}\rceil$ - 1 have crashed.\\
+We construct an algorithm based on the algorithm CompleteElect that was realized under Total Reliability.\\ Here is the algorithm $\textbf{CompleteElect}$:
+\begin{block}{}
+$\textbf{1)}$ A candidate entity x sends a Capture message to a neighbor y.\\ \medskip
+$\textbf{2)}$ If y is candidate, the outcome of the attack depends on the stage and the id of the two entities:\\ \medskip
+(a) If $\textbf{stage(x) > stage(y)}$, the attack is successful.\\
+(b) If $\textbf{stage(x) = stage(y)}$, the attack is successful if id(x) < id(y); otherwise x becomes passive.\\
+(c) If $\textbf{stage(x) < stage(y)}$, x becomes passive.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\begin{block}{}
+$\textbf{3)}$ If y is passive, the attack is successful.\\ \medskip
+$\textbf{4)}$ If y is already captured, then x has to defeat y's owner z before capturing y. Specifically, a Warning message with x's id and stage is send by y to its owner z.\\ \medskip
+(a) $\textbf{If z is a candidate in a higher stage}$, or in the same stage but with a smaller id than x, then the attack to y is not successful: z will notify y that, in turn, will notify x.\\ \medskip
+(b) $\textbf{In all other cases}$ (z is already passive or captured, z is a candidate in a smaller stage, or in the same stage but with a larger id than x), the attack to y is successful: z notifies x via y, and if candidate it becomes passive.\\
+\medskip
+$\textbf{5)}$ If the attack is successful, y is captured by x, x increments stage(x) and proceeds with its conquest.
+\end{block}
+\end{frame}
+
+\begin{frame}
+The most important changes are essentially two:
+\begin{flushleft}
+\end{flushleft}
+\setbeamertemplate{enumerate items}[circle]
+\begin{enumerate}
+\item $\textbf{In the original protocol CompleteElect}$, a candidate entity x starts by sending a "Capture" message to a single neighbor and waits for its reply.\\
+\medskip
+$\textbf{In this algorithm}$, because at most f entities have crashed, at the beginning x will send the "Capture" message to f + 1 entities. When x receives an "Accept" message, it enters the next stage and sends it message to another entity;\\
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\small
+\begin{enumerate}
+\setcounter{enumi}{1}
+\item $\textbf{In the original protocol Complete Elect}$, a candidate entity x has only one pending "Capture" message and waits for its reply; if the reply is "Reject" x become passive.\\ \medskip
+$\textbf{In this algorithm}$, instead, x has f + 1 pending "Capture".
+\medskip
+\begin{alertblock}{Alert!!!}
+It may happen that while x waiting for the reply from y, x receives some "Accept" messages whose effect is to increase the stage number. So x must reject the "Reject" command.
+\end{alertblock}
+\medskip $\textbf{Solution}$: x will send a new "Capture" message to y with its new stage number and close all its other ports waiting for the reply from y. When the reply arrives, x will increase the stage (if it's "Accept") or become passive (if it's "Reject") before reopening all the ports.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Correctness}
+\small
+\begin{flushleft}
+For proving the correctness of the algorithm, we must consider the effects of the changes we have made on the original protocol.
+\end{flushleft}
+\begin{flushleft}
+In particular, in the second change, several entities may close all their ports but one and waiting for a reply from that one. To ensure correctness, we must prove that settlements must no create deadlocks.
+\end{flushleft}
+\begin{flushleft}
+Every request ("Capture" or "Warning") sent to a nonfaulty entity receives a reply. After a settlement (between x and y) at most one of them is still candidate and if so it has increased its stage.\\
+If an entity x has an owner, then both x and its owner are nonfaulty. A nonfaulty entity always replies to a "Warning" message.
+\end{flushleft}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Lemma}
+Every entity eventually reaches stage greater than $\frac{n}{2}$, or it ceases to be a candidate.
+\end{block}
+\begin{block}{Lemma}
+Assume an entity x ceases to be candidate as a result of a message originated by candidate y. Then, at any time after the time this message is processed by x, either the stage of y is greater than the stage of x or x and y are in the same stage, but id(x) $<$ id(y).
+\end{block}
+\begin{block}{Lemma}
+At least one entity always remains a candidate.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\begin{block}{Lemma}
+Let x be a candidate and s be its final size. The total number of times a capture message was sent by x is at most 2s + f.
+\end{block}
+\begin{flushleft}
+$\textbf{Proof}$
+\end{flushleft}
+When x initiates the algorithm, it sends f + 1 "Capture" messages. Every other "Capture" message it sends follows the reception of either an "Accept" or a "Reject" message.\\ The number of "Accept" messages it receives as a candidate is s - 1.\\ The number of "Reject" messages it receives as a candidate is at most s.
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
+\end{frame}
+
+\begin{frame}{Costs}
+\small
+\begin{block}{Lemma}
+For every l $\geqslant$ 2, if there are l - 1 candidates whose final size is not smaller that of a candidate x, then the stage of x is at most ln.
+\end{block}
+\small
+Let k denote the number of spontaneous initiators.\\
+$\#$messages for the leader announcement: n-1\\
+A "Capture" message from x to y, in addition to the reply from y, will cause at most two additional messages: a "Warning" from y to its owner z and the reply.
+\begin{center}
+$\#\textbf{Total messages}$ $\leq$ $\textbf{n - 1 +}$ 4$\#\textbf{Capture messages}$
+\end{center}
+Let x be a candidate and s be its final size. Thanks to lemma 7.6.4 we know that the number of times this candidate ha sent a "Capture" message does not exceed 2s + f. Entities that didn't wake up spontaneously never become candidates.\\
+\end{frame}
+
+\begin{frame}
+\small
+\begin{center}
+$\#\textbf{Total messages}$ $\leq$ $\textbf{n - 1 +}$ $\textbf{4}$ $\Sigma_{1 \leq j \leq k}\textbf{ (2 }\frac{\textbf{n}}{\textbf{j}}$ $\textbf{+ f)}$ \\
+\medskip
+$\textbf{M[FT - CompleteElect] = O(n log k + k f)}$
+\end{center}
+\begin{block}{}
+Is this cost optimal?
+\end{block}
+The bound of FT-CompleteElect algorithm made up by two components: O(n log k) and O(k f).\\
+\medskip
+$\Omega$(n log k) messages are needed for election in complete networks even in the absence of failures.\\
+\medskip
+Each initiator will send at least f + 1 messages so also $\Omega$(k f) are needed. (k = $\#$initiators)
+\\ \medskip
+$\textbf{Finally, we can see that the complete lowerbound }\Omega\textbf{(n log k + k f)}$ $\textbf{matches the upperbound O(n log k + k f).}$
+\end{frame}
+
+\end{document}

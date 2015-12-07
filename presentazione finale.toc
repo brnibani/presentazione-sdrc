@@ -1,0 +1,9 @@
+\beamer@endinputifotherversion {3.33pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Localized Entity Failures: Using Fault Detection}{2}{0}{1}
+\beamer@subsectionintoc {1}{1}{Introduction}{3}{0}{1}
+\beamer@subsectionintoc {1}{2}{Failure Detectors and Their Properties}{5}{0}{1}
+\beamer@subsectionintoc {1}{3}{The Weakest Failure Detector}{12}{0}{1}
+\beamer@sectionintoc {2}{Localized Entity Failures: Preexecution Failures}{20}{0}{2}
+\beamer@subsectionintoc {2}{1}{Partial Reliability}{21}{0}{2}
+\beamer@subsectionintoc {2}{2}{Example: Election in Complete Network}{22}{0}{2}
